@@ -220,5 +220,9 @@
 
 (defalias 'yes-or-no-p 'y-or-n-p)
 
-
 (use-package magit)
+
+(setq auth-sources '("~/.authinfo.gpg"))
+
+(use-package forge
+  :after magit)
