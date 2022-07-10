@@ -84,11 +84,6 @@
   ([remap describe-variable] . counsel-describe-variable)
   ([remap describe-key] . helpful-key))
 
-(defhydra hydra-text-scale (:timeout 4)
-  ("j" text-scale-increase "in")
-  ("k" text-scale-decrease "out")
-  ("f" nil "finished" :exit t))
-
 (use-package evil
   :init
   (setq evil-want-integration t)
@@ -119,9 +114,6 @@
     :keymaps '(normal insert visual emacs)
     :prefix "SPC"
     :global-prefix "C-SPC"))
-
-(fl/leader-keys
-  "ts" '(hydra-text-scale/body :which-key "scale text"))
 
 (defalias 'yes-or-no-p 'y-or-n-p)
 
@@ -352,6 +344,7 @@
 (add-hook 'clojurescript-mode-hook 'lsp)
 (add-hook 'clojurec-mode-hook 'lsp)
 (add-hook 'c-mode-hook 'lsp)
+(add-hook 'c++-mode-hook 'lsp)
 (add-hook 'java-mode-hook 'lsp)
 
 (setq gc-cons-threshold (* 100 1024 1024)
