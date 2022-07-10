@@ -379,6 +379,7 @@
     (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
     (add-to-list 'org-structure-template-alist '("cl" . "src clojure"))
     (add-to-list 'org-structure-template-alist '("cc" . "src C"))
+    (add-to-list 'org-structure-template-alist '("cp" . "src C++"))
     (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
     (add-to-list 'org-structure-template-alist '("py" . "src python")))
 
@@ -419,7 +420,7 @@
 
   (setq lsp-lens-enable t)
 
-  (setq package-selected-packages '(clojure-mode lsp-mode cider lsp-treemacs flycheck company))
+  (setq package-selected-packages '(cider lsp-treemacs flycheck))
 
   (add-hook 'clojure-mode-hook 'lsp)
   (add-hook 'clojurescript-mode-hook 'lsp)
@@ -431,7 +432,6 @@
   (setq gc-cons-threshold (* 100 1024 1024)
         read-process-output-max (* 1024 1024)
         treemacs-space-between-root-nodes nil
-        company-minimum-prefix-length 1
         lsp-lens-enable t
         lsp-signature-auto-activate nil
                                           ; lsp-enable-indentation nil ; uncomment to use cider indentation instead of lsp
@@ -439,6 +439,106 @@
         )
 
 #+end_src
+
+** Languages
+
+*** Clojure
+
+#+begin_src emacs-lisp
+
+  (use-package clojure-mode
+    :ensure t
+    :init
+    (defconst clojure--prettify-symbols-alist
+      '(("fn"   . ?λ)
+        ("__"   . ?⁈)))
+
+    :config
+    (add-hook 'clojure-mode-hook 'global-prettify-symbols-mode)
+    :bind (("C-c d f" . cider-code)
+           ("C-c d g" . cider-grimoire)
+           ("C-c d w" . cider-grimoire-web)
+           ("C-c d c" . clojure-cheatsheet)
+           ("C-c d d" . dash-at-point)))
+
+#+end_src
+
+**** CIDER
+
+#+begin_src emacs-lisp
+
+(use-package cider
+  :ensure t
+  :commands (cider cider-connect cider-jack-in)
+
+  :init
+  (setq cider-auto-select-error-buffer t
+        cider-repl-pop-to-buffer-on-connect nil
+        cider-repl-use-clojure-font-lock t
+        cider-repl-wrap-history t
+        cider-repl-history-size 1000
+        cider-show-error-buffer t
+        nrepl-hide-special-buffers t
+        ;; Stop error buffer from popping up while working in buffers other than the REPL:
+        nrepl-popup-stacktraces nil)
+
+  ;; (add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
+  (add-hook 'cider-mode-hook 'ivy-mode)
+
+  (add-hook 'cider-repl-mode-hook 'paredit-mode)
+  (add-hook 'cider-repl-mode-hook 'superword-mode)
+  (add-hook 'cider-repl-mode-hook 'ivy-mode)
+  (add-hook 'cider-test-report-mode 'jcf-soft-wrap)
+
+  :bind (:map cider-mode-map
+         ("C-c C-v C-c" . cider-send-and-evaluate-sexp)
+         ("C-c C-p"     . cider-eval-print-last-sexp)))
+
+#+end_src
+
+**** Paredit
+
+#+begin_src emacs-lisp
+
+  (defun paredit-delete-indentation (&optional arg)
+    "Handle joining lines that end in a comment."
+    (interactive "*P")
+    (let (comt)
+      (save-excursion
+        (move-beginning-of-line (if arg 1 0))
+        (when (skip-syntax-forward "^<" (point-at-eol))
+          (setq comt (delete-and-extract-region (point) (point-at-eol)))))
+      (delete-indentation arg)
+      (when comt
+        (save-excursion
+          (move-end-of-line 1)
+          (insert " ")
+          (insert comt)))))
+
+  (defun paredit-remove-newlines ()
+    "Removes extras whitespace and newlines from the current point
+    to the next parenthesis."
+    (interactive)
+    (let ((up-to (point))
+          (from (re-search-forward "[])}]")))
+      (backward-char)
+      (while (> (point) up-to)
+        (paredit-delete-indentation))))
+
+  (use-package paredit
+    :bind ("M-^" . paredit-delete-indentation)
+    :bind ("C-^" . paredit-remove-newlines)
+    :init
+    (add-hook 'clojure-mode-hook 'paredit-mode))
+
+#+end_src
+
+Useful key sequences for positioning cursor on particular s-expressions:
+
+C-M- a d
+    Move to beginning of function and inside the declaration. Good start to just about any other positioning.
+C-M- d f d
+    At beginning of function, moves to first s-expression. 
 
 ** Projectile
 
