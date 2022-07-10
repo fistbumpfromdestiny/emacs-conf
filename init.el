@@ -339,8 +339,6 @@
 
 (setq lsp-lens-enable t)
 
-(setq package-selected-packages '(cider lsp-treemacs flycheck))
-
 (add-hook 'clojure-mode-hook 'lsp)
 (add-hook 'clojurescript-mode-hook 'lsp)
 (add-hook 'clojurec-mode-hook 'lsp)
@@ -357,6 +355,12 @@
                                         ; lsp-enable-completion-at-point nil ; uncomment to use cider completion instead of lsp
       )
 
+(use-package flycheck
+   :init (global-flycheck-mode))
+
+ ;; First install the package, then install the checker as soon as `clojure-mode' is loaded
+ (use-package flycheck-clj-kondo)
+
 (use-package clojure-mode
   :ensure t
   :init
@@ -365,6 +369,7 @@
       ("__"   . ?⁈)))
 
   :config
+  (require 'flycheck-clj-kondo)
   (add-hook 'clojure-mode-hook 'global-prettify-symbols-mode)
   :bind (("C-c d f" . cider-code)
          ("C-c d g" . cider-grimoire)
