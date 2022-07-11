@@ -344,7 +344,6 @@
 (add-hook 'clojurec-mode-hook 'lsp)
 (add-hook 'c-mode-hook 'lsp)
 (add-hook 'c++-mode-hook 'lsp)
-(add-hook 'java-mode-hook 'lsp)
 
 (setq gc-cons-threshold (* 100 1024 1024)
       read-process-output-max (* 1024 1024)
@@ -354,6 +353,15 @@
                                         ; lsp-enable-indentation nil ; uncomment to use cider indentation instead of lsp
                                         ; lsp-enable-completion-at-point nil ; uncomment to use cider completion instead of lsp
       )
+
+(use-package lsp-ui)
+
+(use-package dap-mode
+  :after lsp-mode
+  :config (dap-auto-configure-mode))
+
+(use-package yasnippet
+  :config (yas-global-mode))
 
 (use-package flycheck
    :init (global-flycheck-mode))
@@ -434,6 +442,12 @@
   :bind ("C-^" . paredit-remove-newlines)
   :init
   (add-hook 'clojure-mode-hook 'paredit-mode))
+
+(use-package lsp-java
+  :config (add-hook 'java-mode-hook 'lsp))
+
+(use-package dap-java
+  :ensure nil)
 
 (use-package projectile
   :diminish projectile-mode

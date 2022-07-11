@@ -108,8 +108,6 @@
 
 #+end_src
   
-
-
 * Key Bindings
 
 #+begin_src emacs-lisp
@@ -151,7 +149,6 @@
     (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
 #+end_src
-
 
 * Package Sources
 
@@ -386,7 +383,6 @@
 #+end_src
 
 * Development
-
 ** Magit
 
 #+begin_src emacs-lisp
@@ -425,7 +421,6 @@
   (add-hook 'clojurec-mode-hook 'lsp)
   (add-hook 'c-mode-hook 'lsp)
   (add-hook 'c++-mode-hook 'lsp)
-  (add-hook 'java-mode-hook 'lsp)
 
   (setq gc-cons-threshold (* 100 1024 1024)
         read-process-output-max (* 1024 1024)
@@ -436,10 +431,26 @@
                                           ; lsp-enable-completion-at-point nil ; uncomment to use cider completion instead of lsp
         )
 
+  (use-package lsp-ui)
+
+#+end_src
+
+** DAP
+#+begin_src emacs-lisp
+  (use-package dap-mode
+    :after lsp-mode
+    :config (dap-auto-configure-mode))
+#+end_src
+
+** YASnippet
+#+begin_src emacs-lisp
+
+  (use-package yasnippet
+    :config (yas-global-mode))
+
 #+end_src
 
 ** Languages
-
 *** Clojure
 **** Flycheck 
 #+begin_src emacs-lisp
@@ -550,6 +561,14 @@ C-M- a d
     Move to beginning of function and inside the declaration. Good start to just about any other positioning.
 C-M- d f d
     At beginning of function, moves to first s-expression. 
+*** Java
+#+begin_src emacs-lisp
+  (use-package lsp-java
+    :config (add-hook 'java-mode-hook 'lsp))
+
+  (use-package dap-java
+    :ensure nil)
+#+end_src
 
 ** Projectile
 
