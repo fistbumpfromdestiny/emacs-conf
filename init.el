@@ -30,6 +30,9 @@
 (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode))
 
+(use-package evil-nerd-commenter
+  :bind ("M-¨" . evilnc-comment-or-uncomment-lines))
+
 ;; Add Which Key to show available key modes
 (use-package which-key
   :init (which-key-mode)
@@ -340,8 +343,11 @@
 
   :commands lsp)
 
-(use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
-(use-package lsp-treemacs :commands lsp-treemacs-errors-list)
+(use-package lsp-ivy
+  :commands lsp-ivy-workspace-symbol)
+(use-package lsp-treemacs
+  :after lsp
+  :commands lsp-treemacs-errors-list)
 
 (setq lsp-lens-enable t)
 
@@ -360,7 +366,10 @@
                                         ; lsp-enable-completion-at-point nil ; uncomment to use cider completion instead of lsp
       )
 
-(use-package lsp-ui)
+(use-package lsp-ui
+  :hook (lsp-mode . lsp-ui-mode)
+  :custom
+  (lsp-ui-doc-position 'bottom))
 
 (use-package dap-mode
   :after lsp-mode
