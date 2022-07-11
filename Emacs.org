@@ -420,13 +420,7 @@
 
     :commands lsp)
 
-  (use-package lsp-ivy
-    :commands lsp-ivy-workspace-symbol)
-  (use-package lsp-treemacs
-    :after lsp
-    :commands lsp-treemacs-errors-list)
-
-  (setq lsp-lens-enable t)
+   (setq lsp-lens-enable t)
 
   (add-hook 'clojure-mode-hook 'lsp)
   (add-hook 'clojurescript-mode-hook 'lsp)
@@ -442,7 +436,12 @@
                                           ; lsp-enable-indentation nil ; uncomment to use cider indentation instead of lsp
                                           ; lsp-enable-completion-at-point nil ; uncomment to use cider completion instead of lsp
         )
+#+end_src
+ 
+*** LSP-UI
 
+#+begin_src emacs-lisp
+  
   (use-package lsp-ui
     :hook (lsp-mode . lsp-ui-mode)
     :custom
@@ -450,6 +449,25 @@
 
 #+end_src
 
+*** LSP-Ivy
+
+#+begin_src emacs-lisp
+
+  (use-package lsp-ivy
+    :commands lsp-ivy-workspace-symbol)
+
+#+end_src
+ 
+*** LSP-Treemacs
+
+#+begin_src emacs-lisp
+
+  (use-package lsp-treemacs
+    :after lsp
+    :commands lsp-treemacs-errors-list)
+
+#+end_src
+ 
 ** DAP
 #+begin_src emacs-lisp
   (use-package dap-mode
@@ -585,7 +603,7 @@ C-M- d f d
     :ensure nil)
 #+end_src
 
-** Company Modei (for better completions)
+** Company Mode (for better completions)
 
 #+begin_src emacs-lisp
 

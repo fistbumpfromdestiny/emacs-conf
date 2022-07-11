@@ -343,13 +343,7 @@
 
   :commands lsp)
 
-(use-package lsp-ivy
-  :commands lsp-ivy-workspace-symbol)
-(use-package lsp-treemacs
-  :after lsp
-  :commands lsp-treemacs-errors-list)
-
-(setq lsp-lens-enable t)
+ (setq lsp-lens-enable t)
 
 (add-hook 'clojure-mode-hook 'lsp)
 (add-hook 'clojurescript-mode-hook 'lsp)
@@ -370,6 +364,13 @@
   :hook (lsp-mode . lsp-ui-mode)
   :custom
   (lsp-ui-doc-position 'bottom))
+
+(use-package lsp-ivy
+  :commands lsp-ivy-workspace-symbol)
+
+(use-package lsp-treemacs
+  :after lsp
+  :commands lsp-treemacs-errors-list)
 
 (use-package dap-mode
   :after lsp-mode
