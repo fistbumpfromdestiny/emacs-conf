@@ -11,7 +11,7 @@
   (setq inhibit-startup-message t
         visible-bell t)
 
-    ;; Turn off some unneeded UI elements
+  ;; Turn off some unneeded UI elements
 
   (tool-bar-mode -1)
   (scroll-bar-mode -1)     
@@ -26,13 +26,14 @@
   (global-display-line-numbers-mode 1)
   (setq display-line-numbers-type 'relative)
 
-    ;; Disable them for some modes though.
+  ;; Disable them for some modes though.
   (defun do-not-display-line-numbers-mode-hook()
     "Hook to disable line-number-mode."
     (display-line-numbers-mode 0))
 
   (add-hook 'org-mode-hook #'do-not-display-line-numbers-mode-hook)
   (add-hook 'eshell-mode-hook #'do-not-display-line-numbers-mode-hook)
+  (add-hook 'treemacs-mode-hook #'do-not-display-line-numbers-mode-hook)
 
   ;; Rainbow Delimiters
   (use-package rainbow-delimiters
@@ -189,6 +190,7 @@
     ;; Global settings (defaults)
     (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
           doom-themes-enable-italic t) ; if nil, italics is universally disabled
+    
     (load-theme 'doom-dracula t)
 
     ;; Enable flashing mode-line on errors
@@ -646,3 +648,71 @@ C-M- d f d
   
 #+end_src
 
+* Dired
+#+begin_src emacs-lisp
+
+  (use-package dired
+    :ensure nil
+    :commands (dired dired-jump)
+    :bind (("C-x C-j" . dired-jump))
+    :custom ((dired-listing-switches "-agho --group-directories-first"))
+    :config
+    (evil-collection-define-key 'normal 'dired-mode-map
+      "h" 'dired-single-up-directory
+      "l" 'dired-single-buffer))
+
+  (use-package dired-single
+    :commands (dired dired-jump))
+
+  (use-package all-the-icons-dired
+    :hook (dired-mode . all-the-icons-dired-mode))
+
+  (use-package dired-open
+    :commands (dired dired-jump)
+    :config
+    ;; Doesn't work as expected!
+    ;;(add-to-list 'dired-open-functions #'dired-open-xdg t)
+    (setq dired-open-extensions '(("png" . "feh")
+                                  ("mkv" . "mpv"))))
+
+  (use-package dired-hide-dotfiles
+    :hook (dired-mode . dired-hide-dotfiles-mode)
+    :config
+    (evil-collection-define-key 'normal 'dired-mode-map
+      "H" 'dired-hide-dotfiles-mode))
+  
+#+end_src
+
+* Eshell
+#+begin_src emacs-lisp
+
+  (defun fl/configure-eshell ()
+    ;; Save command history when commands are entered
+    (add-hook 'eshell-pre-command-hook 'eshell-save-some-history)
+
+    ;; Truncate buffer for performance
+    (add-to-list 'eshell-output-filter-functions 'eshell-truncate-buffer)
+
+    ;; Bind some useful keys for evil-mode
+    (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-r") 'counsel-esh-history)
+    (evil-define-key '(normal insert visual) eshell-mode-map (kbd "<home>") 'eshell-bol)
+    (evil-normalize-keymaps)
+
+    (setq eshell-history-size         10000
+          eshell-buffer-maximum-lines 10000
+          eshell-hist-ignoredups t
+          eshell-scroll-to-bottom-on-input t))
+
+  (use-package eshell-git-prompt
+    :after eshell)
+
+  (use-package eshell
+    :hook (eshell-first-time-mode . fl/configure-eshell)
+    :config
+
+    (with-eval-after-load 'esh-opt
+      (setq eshell-destroy-buffer-when-process-dies t)
+      (setq eshell-visual-commands '("htop" "zsh" "vim" "nvim")))
+
+    (eshell-git-prompt-use-theme 'powerline))
+#+end_src
