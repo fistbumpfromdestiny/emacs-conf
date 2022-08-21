@@ -35,7 +35,6 @@
   (auto-package-update-hide-results nil)
   :config
   (auto-package-update-maybe))
- ;;  (auto-package-update-at-time "09:00"))
 
 (use-package no-littering)
 
@@ -154,6 +153,14 @@
   :after evil
   :config
   (evil-collection-init))
+
+(use-package undo-tree
+  :ensure t
+  :after evil
+  :diminish
+  :config
+  (evil-set-undo-system 'undo-tree)
+  (global-undo-tree-mode 1))
 
 (use-package general
   :after evil
@@ -310,7 +317,35 @@
                   (org-level-6 . 1.1)
                   (org-level-7 . 1.1)
                   (org-level-8 . 1.1)))
-    (set-face-attribute (car face) nil :font "Fira Code Retina" :weight 'regular :height (cdr face))))
+    (set-face-attribute (car face) nil :font "Fira Code Retina" :weight 'regular :height (cdr face)))
+    ;; Ensure that anything that should be fixed-pitch in Org files appears that way
+
+    (set-face-attribute 'org-block nil    :foreground nil :inherit 'fixed-pitch)
+    (set-face-attribute 'org-table nil    :inherit 'fixed-pitch)
+    (set-face-attribute 'org-formula nil  :inherit 'fixed-pitch)
+    (set-face-attribute 'org-code nil     :inherit '(shadow fixed-pitch))
+    (set-face-attribute 'org-table nil    :inherit '(shadow fixed-pitch))
+    (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+    (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+    (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+    (set-face-attribute 'org-checkbox nil  :inherit 'fixed-pitch)
+    (set-face-attribute 'line-number nil :inherit 'fixed-pitch)
+    (set-face-attribute 'line-number-current-line nil :inherit 'fixed-pitch))
+
+(fl/org-font-setup)
+
+(use-package org-roam
+ :ensure t
+ :custom
+ (org-roam-directory "~/RoamNotes")
+ (org-roam-completion-everywhere t)
+ :bind (("C-c n l" . org-roam-buffer-toggle)
+        ("C-c n f" . org-roam-node-find)
+        ("C-c n i" . org-roam-node-insert)
+        :map org-mode-map
+        ("C-M-i" . completion-at-point))
+ :config
+ (org-roam-setup))
 
 (with-eval-after-load 'org
   (org-babel-do-load-languages
@@ -492,6 +527,13 @@
 
 (use-package dap-java
   :ensure nil)
+
+(setq-default indent-tabs-mode nil)
+(setq-default tab-width 4)
+(setq indent-line-function 'insert-tab)
+(setq c-default-style "linux") 
+(setq c-basic-offset 4) 
+(c-set-offset 'comment-intro 0)
 
 (use-package company
   :after lsp-mode
